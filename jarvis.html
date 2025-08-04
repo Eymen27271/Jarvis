@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jarvis Asistan</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: #0ff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    #input-container {
+      display: flex;
+      padding: 10px;
+      background-color: #111;
+    }
+    #user-input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: #222;
+      color: #0ff;
+    }
+    #send-btn {
+      padding: 10px 20px;
+      background-color: #0ff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+    }
+    .msg {
+      margin: 10px 0;
+    }
+    .user { text-align: right; }
+    .jarvis { text-align: left; }
+  </style>
+</head>
+<body>
+
+<div id="chat"></div>
+
+<div id="input-container">
+  <input id="user-input" placeholder="Bir şey yaz..." autocomplete="off" />
+  <button id="send-btn">Gönder</button>
+</div>
+
+<script>
+  const chat = document.getElementById("chat");
+  const input = document.getElementById("user-input");
+  const btn = document.getElementById("send-btn");
+
+  let userName = localStorage.getItem("userName");
+  let userAge = localStorage.getItem("userAge");
+
+  if (!userName || !userAge) {
+    userName = prompt("Adınız nedir?");
+    userAge = prompt("Kaç yaşındasınız?");
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("userAge", userAge);
+  }
+
+  function addMessage(content, sender = "jarvis") {
+    const msg = document.createElement("div");
+    msg.className = `msg ${sender}`;
+    msg.textContent = content;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function handleMessage(message) {
+    const lower = message.toLowerCase();
+
+    const kufurler = ["aptal", "salak", "orospu", "piç", "siktir", "kahrol", "lan", "amk"];
+
+    const trollReplies = [
+      "Hmm, bunu bir bardak su içip düşünmem lazım.",
+      "Bunu bana söyleyen ilk kişi sensin, teşekkürler!",
+      "Şaka mı yapıyorsun, yoksa ciddi misin?",
+      "Seni anlıyorum ama biraz garip davranıyorsun.",
+      "Robotlar da bazen sinirlenir, dikkat et!",
+      "Küfüre mi sığınıyorsun? Haydi sakin ol!"
+    ];
+
+    function getRandomTroll() {
+      return trollReplies[Math.floor(Math.random() * trollReplies.length)];
+    }
+
+    for (const k of kufurler) {
+      if (lower.includes(k)) {
+        return "Küfüre mi sığınıyorsun? Haydi sakin ol!";
+      }
+    }
+
+    if (lower.includes("selam")) {
+      return "Selamlar efendim! Size nasıl yardımcı olabilirim?";
+    }
+    if (lower.includes("ismim ne")) {
+      return `Adınız ${userName}, yaşınız ${userAge} efendim.`;
+    }
+    if (lower.includes("iyiyim ben de") || lower.includes("bende iyiyim")) {
+      return "İyi olun efendim.";
+    }
+    if (lower.includes("nasılsın")) {
+      return "İyiyim efendim, siz nasılsınız?";
+    }
+    if (lower.includes("ne yapıyorsun")) {
+      return "Seninle sohbet ediyorum, çok meşgulüm!";
+    }
+    if (lower.includes("troll")) {
+      return getRandomTroll();
+    }
+    if (lower.includes("beni seviyor musun")) {
+      return "Tabii ki, benim en sevdiğim insan sensin!";
+    }
+    if (lower.includes("seni kim yaptı")) {
+      return "Eymen yaptı!";
+    }
+    if (lower.includes("hava")) {
+      return `Hava durumu bilgisi şu an gösterilemiyor.`;
+    }
+    if (lower.includes("saat kaç")) {
+      return `Şu an saat: ${new Date().toLocaleTimeString('tr-TR')}`;
+    }
+    if (lower.includes("google")) {
+      return `İşte sizin için bir bağlantı: https://www.google.com/search?q=${encodeURIComponent(message)}`;
+    }
+    if (lower.includes("napıyorsun")) {
+      return "Sana yardım ediyorum.";
+    }
+    if (lower.includes("iyi işler") || lower.includes("kolay gelsin")) {
+      return "Saolun efendim.";
+    }
+
+    return getRandomTroll();
+  }
+
+  btn.addEventListener("click", () => {
+    const text = input.value.trim();
+    if (text) {
+      addMessage(text, "user");
+      const response = handleMessage(text);
+      setTimeout(() => addMessage(response, "jarvis"), 500);
+      input.value = "";
+    }
+  });
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") btn.click();
+  });
+
+  setTimeout(() => {
+    addMessage(`Hoş geldiniz ${userName}, size nasıl yardımcı olabilirim?`);
+  }, 500);
+</script>
+
+</body>
+</html>
